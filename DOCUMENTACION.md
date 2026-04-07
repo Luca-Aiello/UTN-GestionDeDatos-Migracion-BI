@@ -1,57 +1,81 @@
-# Estrategia y Diccionario de Datos
+# Documentación Técnica: Arquitectura y Modelado de Datos
 
-En este documento se detallan las decisiones técnicas tomadas durante el diseño del modelo relacional transaccional y el modelo dimensional (Business Intelligence), incluyendo el diccionario de entidades.
-
-## 1. Decisiones de Arquitectura y Resolución de Inconsistencias
-
-Durante el proceso de migración y normalización de la tabla maestra, implementamos las siguientes estrategias para garantizar la integridad referencial:
-
-* [cite_start]**Manejo de Claves Compuestas (PKs):** En la tabla `Ticket`, la PK se conformó por `tick_numero`, `tick_sucursal`, `tick_tipo` y `tick_fecha_hora` al detectar en los datos de origen tickets duplicados para una misma sucursal [cite: 741-744]. En `Item_ticket`, agregamos `item_precio_total` a la PK para evitar conflictos con productos repetidos que compartían las demás claves[cite: 736].
-* [cite_start]**Claves Subrogadas (IDENTITY):** Se generaron PKs autoincrementales para independizar entidades y simplificar relaciones, como en `Pago` (`pago_codigo`) [cite: 758-759], `Detalle_Pago_Tarjeta` [cite: 784-785], `Empleado` [cite: 796-797], y tablas paramétricas como `Localidad`, `Provincia`, `Estado_Envio` y `Tipo_Caja` [cite: 776-779, 790, 793-794, 798-802].
-* **Corrección de Referencias:** Se eliminaron FKs cruzadas redundantes. [cite_start]Por ejemplo, `Detalle_Pago_Tarjeta` quedó referenciada desde `Pago`, eliminando la dependencia inversa [cite: 784-785].
-* [cite_start]**Tablas Intermedias:** Se crearon `Promocion_X_Producto` y `Promocion_X_Ticket` para normalizar relaciones de muchos a muchos [cite: 732-734, 748-749].
+En este documento se detallan exhaustivamente las decisiones técnicas adoptadas durante el diseño del modelo relacional transaccional y el modelo dimensional (Business Intelligence). Se incluye el diccionario de datos completo y la justificación de la normalización aplicada para la migración de la tabla maestra.
 
 ---
 
-## 2. Diccionario de Datos: Modelo Transaccional
+## 1. Decisiones Generales de Modelado e Integridad
 
-* **Promocion_X_Ticket:** Tabla intermedia que registra las promociones aplicadas a los productos dentro de un ítem de ticket. [cite_start]Su PK está compuesta por el ticket y la sucursal [cite: 732-734].
-* [cite_start]**Item_ticket:** Detalle de productos por ticket[cite: 736].
-* **Envio:** Registra los envíos. Utiliza un `envi_codigo` autoincremental como PK y una FK múltiple hacia Ticket. Migra todos los datos de envío agregando el estado referenciado (`Estado_Envio`) [cite: 738-739].
-* **Ticket:** Encabezado de ventas. [cite_start]Incluye FKs hacia Cliente, Empleado y Caja [cite: 741-744].
-* [cite_start]**Descuento_X_Medio_Pago:** Almacena el descuento específico aplicado a un pago según su medio[cite: 746].
-* [cite_start]**Promocion_X_Producto:** Tabla que resuelve la relación N:M entre promociones y productos [cite: 748-749].
-* **Caja:** Identifica las cajas por sucursal. [cite_start]Su PK es compuesta (`caja_codigo` y `caja_sucursal`) [cite: 751-753].
-* [cite_start]**Sucursal:** Detalles de sucursales, vinculadas a Localidad y Supermercado [cite: 755-757].
-* [cite_start]**Pago:** Registro de pagos con una PK autoincremental para asociar importe, fecha, medio y cliente de forma única [cite: 758-759].
-* [cite_start]**Descuento:** Catálogo de descuentos vigentes con topes y porcentajes [cite: 761-763].
-* [cite_start]**Cliente:** Información personal, de contacto y FK a Localidad [cite: 764-765].
-* [cite_start]**Supermercado:** Detalles corporativos (CUIT, Razón social, etc.) con PK autoincremental [cite: 766-768].
-* [cite_start]**Promocion:** Fechas de vigencia de promociones y asociación a reglas [cite: 769-770].
-* [cite_start]**Medio_De_Pago:** Catálogo de medios habilitados (PK identity) y su tipo [cite: 772-774].
-* [cite_start]**Localidad & Provincia:** Tablas normalizadas para unificar los datos de domicilios de clientes, sucursales y supermercados [cite: 776-779, 798-802].
-* [cite_start]**Producto:** Almacena atributos del producto y se relaciona con Categoria y Marca [cite: 780-782].
-* [cite_start]**Detalle_Pago_Tarjeta:** Datos de la transacción física (tarjeta, vencimiento, cuotas) [cite: 783-785].
-* [cite_start]**Tipo_Medio_Pago / Tipo_Caja / Estado_Envio:** Tablas paramétricas para centralizar valores [cite: 786-794].
-* **Empleado:** Datos de RRHH. [cite_start]Se agregó una PK autoincremental para su creación [cite: 795-797].
-* [cite_start]**Categoria / Marca:** Dimensiones del producto [cite: 803-806].
-* [cite_start]**Regla:** Condiciones matemáticas y lógicas de las promociones (descuento aplicable, cantidades máximas, exclusividad de marca) [cite: 807-808].
+Durante la migración de datos desestructurados, se establecieron las siguientes estrategias de arquitectura:
+
+* **Manejo de Claves Compuestas (PKs):** Se utilizaron para garantizar la unicidad frente a datos origen inconsistentes. Por ejemplo, en `Ticket` se agregó `tick_fecha_hora` a la PK (junto a número, sucursal y tipo) al detectar comprobantes duplicados. En `Item_ticket`, se sumó `item_precio_total` a la clave para diferenciar productos repetidos en un mismo ticket.
+* **Claves Subrogadas autoincrementales (`IDENTITY`):** Implementadas masivamente para independizar entidades, optimizar índices y simplificar relaciones en entidades core como `Pago` (`pago_codigo`), `Detalle_Pago_Tarjeta` y `Empleado`, así como en todas las tablas paramétricas de dominios geográficos y tipologías.
+* **Resolución de Referencias Cruzadas:** Se corrigieron dependencias circulares del diseño inicial. Por ejemplo, `Detalle_Pago_Tarjeta` quedó estructurada como referenciada desde `Pago`, eliminando la Foreign Key (FK) redundante inversa.
 
 ---
 
-## 3. Diccionario de Datos y Reglas: Modelo BI (Business Intelligence)
+## 2. Diccionario de Datos: Modelo Relacional Transaccional
 
-Para soportar los KPIs, se crearon vistas basadas en el siguiente esquema de estrella:
+El sistema OLTP normalizado se compone de 25 entidades estructuradas para garantizar el soporte de las operaciones de venta, envíos y promociones:
 
-**Dimensiones (Dimensions):**
-* **BI_Turnos:** Se definieron rangos horarios. [cite_start]Para el turno nocturno, se manejó la lógica de inicio a las 20:00 y fin a las 08:00 [cite: 933-934].
-* **BI_Rango_Etario:** Se agruparon las edades (ej. <25, 25-35, etc.). [cite_start]Se fijó un tope de 200 años para el último rango y se añadió un rango `NULL` para gestionar pagos sin cliente asociado [cite: 939-941].
-* **BI_Tiempo:** Granularidad a nivel Año, Cuatrimestre y Mes [cite: 937-938].
-* **BI_Ubicacion & BI_Provincia:** Jerarquía geográfica para análisis regional [cite: 942-945].
-* [cite_start]**Dimensiones estándar:** `BI_Medio_De_Pago` [cite: 927-928][cite_start], `BI_Categoria` [cite: 929-930][cite_start], `BI_Tipo_Caja` [cite: 931-932] [cite_start]y `BI_Sucursal` [cite: 935-936].
+### Ventas y Transacciones
+* **Ticket:** Entidad cabecera. La PK compuesta asegura unicidad mediante `tick_numero`, `tick_sucursal`, `tick_tipo` y `tick_fecha_hora`. Contiene referencias (FKs) a Cliente, Empleado y Caja.
+* **Item_ticket:** Detalle de productos por ticket. Su PK integra múltiples campos, incluyendo el precio total, para evitar el colapso de registros duplicados idénticos en el origen.
+* **Pago:** Entidad centralizada con una PK única autoincremental (`pago_codigo`) basada en la fecha, importe, medio de pago, detalle (tarjeta) y cliente.
+* **Detalle_Pago_Tarjeta:** Almacena los datos de pagos con tarjeta generándose una PK autoincremental (`deta_codigo`) para consolidar número, vencimiento y cuotas de la tarjeta.
+* **Envio:** Registra la logística. Utiliza una PK `envi_codigo` (IDENTITY) y una FK múltiple hacia `Ticket`. Agrega el campo `envi_estado` normalizando los estados del servicio.
 
-**Tablas de Hechos (Fact Tables):**
-* **BI_Fact_Table_Ventas:** Relaciona tiempo, sucursal, turnos, rango etario, ubicación y tipo de caja. [cite_start]Registra el importe total, cantidad de artículos y la suma unificada de descuentos (promociones + medios de pago) [cite: 946-948].
-* **BI_Fact_Table_Pagos:** Relaciona tiempo, medio de pago, sucursal y rango etario. [cite_start]Cuantifica el importe base (sin descuento), el valor descontado y la cantidad de cuotas [cite: 949-952].
-* **BI_Fact_Table_Envios:** Relaciona tiempo, sucursal, rango etario y ubicación. [cite_start]Analiza la cantidad total de envíos, métricas de cumplimiento y costos logísticos [cite: 953-954].
-* **BI_Fact_Table_Promociones:** Relaciona tiempo y categoría. [cite_start]Mide el impacto monetario de las promociones por segmento de producto [cite: 955-957].
+### Promociones y Descuentos
+* **Promocion:** Detalla la vigencia (inicio y fin) y se asocia fuertemente a una `Regla` comercial.
+* **Regla:** Parametriza las lógicas del negocio (PK IDENTITY): descripción, descuentos aplicables, cantidades máximas, y si aplica a misma marca o producto.
+* **Descuento:** Almacena tipos de descuentos a aplicar por compras, con sus fechas de vigencia, porcentajes, topes y FK a `Medio_De_Pago`.
+* **Promocion_X_Producto:** Tabla intermedia que resuelve la relación muchos a muchos (N:M) vinculando qué promociones aplican a qué productos.
+* **Promocion_X_Ticket:** Entidad intermedia que registra el rastro de la promoción específica y el descuento monetario aplicado a los productos de un `Item_ticket`.
+* **Descuento_X_Medio_Pago:** Vincula y registra la cantidad de descuento aplicada a un `Pago` específico en base a un `Descuento`. PK compuesta por las FKs de ambas tablas.
+
+### Catálogo de Productos
+* **Producto:** Almacena el código (IDENTITY), nombre, descripción y precio. Se asocia mediante FKs a su Categoría, Subcategoría y Marca.
+* **Categoria:** Administra tanto categorías principales como subcategorías bajo una PK `cate_codigo` autoincremental.
+* **Marca:** Entidad paramétrica (PK IDENTITY) para catalogar las marcas de los productos.
+
+### Entidades Geográficas y Corporativas
+* **Cliente:** Datos demográficos y de contacto. Integra una FK a `Localidad`.
+* **Supermercado:** Detalles fiscales (CUIT, Razón Social) con PK incremental (`supe_codigo`).
+* **Sucursal:** Mapeo de sucursales con FK directa a `Localidad` y a `Supermercado`. Se eliminó el campo provincia redundante para alcanzarlo mediante transitividad geográfica.
+* **Localidad:** Centraliza localizaciones (PK IDENTITY) utilizadas por clientes, sucursales y supermercados, y delega a `Provincia` por medio de FK.
+* **Provincia:** Centraliza las provincias del país con PK IDENTITY.
+
+### Recursos Humanos y Operaciones
+* **Empleado:** Tabla generada con PK autoincremental `emp_codigo` para aislar los datos demográficos (DNI, registro, email, nacimiento).
+* **Caja:** Identificada por una PK compuesta (`caja_codigo` y `caja_sucursal`) para resolver el escenario de múltiples cajas con el mismo número operando en distintas sucursales.
+* **Tipo_Caja:** Entidad paramétrica (PK IDENTITY) con la descripción de los tipos operativos de caja.
+* **Medio_De_Pago:** Catálogo de medios existentes dados de alta (PK IDENTITY), referenciando a su `Tipo_Medio_Pago`.
+* **Tipo_Medio_Pago:** Normalización de la naturaleza del medio de pago.
+* **Estado_Envio:** Centraliza los posibles estados logísticos (PK IDENTITY) facilitando su modificación y lectura.
+
+---
+
+## 3. Diccionario de Datos: Modelo Dimensional (Business Intelligence)
+
+Para dar soporte a la creación de tableros y resolución de KPIs (Ticket Promedio, Desvíos logísticos, Efectividad de promociones, etc.), se diseñó un modelo en esquema Estrella/Copo de Nieve compuesto por 13 entidades.
+
+### Dimensiones (Dimensions)
+* **BI_Tiempo:** Define la granularidad analítica principal agrupando por Año, Cuatrimestre y Mes.
+* **BI_Turnos:** Clasificación de rangos horarios. Para absorber el turno de la madrugada no previsto inicialmente, se modeló con lógica de rango invertido (Hora Inicial = 20, Hora Final = 8).
+* **BI_Rango_Etario:** Segmentación por edad. Se definió un tope superior absoluto de 200 años y se implementó un rango dinámico `NULL` (`edad_inicial IS NULL` y `edad_final IS NULL`) para contabilizar pagos ejecutados sin un cliente registrado.
+* **BI_Ubicacion:** Dimensión geográfica cruzando el nombre de la localidad con una FK a `BI_Provincia`.
+* **BI_Provincia:** Dimensión complementaria para agrupaciones provinciales.
+* **BI_Medio_De_Pago:** Dimensión que almacena nombre y código del medio utilizado.
+* **BI_Categoria:** Dimensión estructurada para cruzar analíticas tanto por categoría como subcategoría.
+* **BI_Tipo_Caja:** Dimensión para evaluar performance o saturación según la tipología de caja.
+* **BI_Sucursal:** Dimensión con código y nombre comercial de cada instalación.
+
+### Tablas de Hechos (Fact Tables)
+* **BI_Fact_Table_Ventas:** * *Dimensiones conectadas:* Tiempo, Sucursal, Turnos, Categorías (indirecta), Rango Etario, Ubicación, Tipo de Caja.
+  * *Measures (Métricas):* Importe total, Cantidad de artículos, Descuento total aplicado (unificando promociones y descuentos por medio de pago).
+* **BI_Fact_Table_Pagos:** * *Dimensiones conectadas:* Tiempo, Medio de Pago, Sucursal, Rango Etario.
+  * *Measures (Métricas):* Importe pago total (sin descuento), Valor descontado acumulado, y Cantidad de cuotas (para análisis de pagos diferidos).
+* **BI_Fact_Table_Envios:** * *Dimensiones conectadas:* Tiempo, Sucursal, Rango Etario, Ubicación.
+  * *Measures (Métricas):* Cantidad de envíos programados, Envíos cumplidos (a tiempo) y Costo de envío logístico.
+* **BI_Fact_Table_Promociones:** * *Dimensiones conectadas:* Tiempo, Categoría.
+  * *Measures (Métricas):* Descuento en producto por promoción aplicada (permite analizar financieramente qué categorías absorbieron mayor volumen de descuentos).
