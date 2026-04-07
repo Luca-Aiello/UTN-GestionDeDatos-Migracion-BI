@@ -1,5 +1,6 @@
 # UTN-GestionDeDatos-Migracion-BI
 Proyecto de migración de datos (T-SQL) y modelado dimensional (BI) para un sistema de supermercados.
+> 📄 **Documentación Oficial:** Puedes consultar el enunciado original y los requerimientos del proyecto descargando el [archivo local](docs/Especificacion_Proyecto.pdf) o visualizándolo online directamente desde [Google Drive]([PEGÁ_TU_LINK_AQUÍ](https://drive.google.com/file/d/1Cl2lF2-SjuyEL5ZyTZXmz940xS8bp81_/view?usp=sharing)).
 
 # Migración y Arquitectura de Datos - Sistema de Supermercados 🛒📊
 
