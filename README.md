@@ -13,8 +13,8 @@ Este repositorio contiene la resolución del proyecto final de la asignatura **G
 ## 📂 Estructura del Repositorio
 * `script_creacion_inicial.sql`: Script T-SQL que genera el esquema transaccional desde cero, crea las tablas con sus restricciones (PKs, FKs) y ejecuta los *Stored Procedures* para migrar más de 1.8 GB de datos crudos.
 * `script_creacion_BI.sql`: Script que construye el modelo dimensional (tablas de Hechos y Dimensiones) y genera las vistas necesarias para resolver 12 KPIs estratégicos (Ticket promedio, desvío de envíos, categorías con mayores descuentos, etc.).
-* `DER.jpg`: Diagrama de Entidad-Relación del modelo transaccional.
-* `DER_BI.jpg`: Diagrama de Entidad-Relación del modelo de Inteligencia de Negocios.
+* `DER.jpeg`: Diagrama de Entidad-Relación del modelo transaccional.
+* `DER_BI.jpeg`: Diagrama de Entidad-Relación del modelo de Inteligencia de Negocios.
 * `Estrategia.pdf`: Documentación técnica respaldando las decisiones de diseño y arquitectura.
 
 ## 🚀 Principales Logros del Proyecto
