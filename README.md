@@ -12,11 +12,12 @@ Este repositorio contiene la resolución del proyecto final de la asignatura **G
 * **Conceptos Aplicados:** Normalización, Stored Procedures, Índices, Modelado Relacional, Modelado Dimensional (Data Warehouse / BI).
 
 ## 📂 Estructura del Repositorio
-* `script_creacion_inicial.sql`: Script T-SQL que genera el esquema transaccional desde cero, crea las tablas con sus restricciones (PKs, FKs) y ejecuta los *Stored Procedures* para migrar más de 1.8 GB de datos crudos.
-* `script_creacion_BI.sql`: Script que construye el modelo dimensional (tablas de Hechos y Dimensiones) y genera las vistas necesarias para resolver 12 KPIs estratégicos (Ticket promedio, desvío de envíos, categorías con mayores descuentos, etc.).
-* `DER.jpeg`: Diagrama de Entidad-Relación del modelo transaccional.
-* `DER_BI.jpeg`: Diagrama de Entidad-Relación del modelo de Inteligencia de Negocios.
-* `Estrategia.pdf`: Documentación técnica respaldando las decisiones de diseño y arquitectura.
+* `scripts/script_creacion_inicial.sql`: Script T-SQL que genera el esquema transaccional desde cero, crea las tablas con sus restricciones (PKs, FKs) y ejecuta los *Stored Procedures* para migrar más de 1.8 GB de datos crudos.
+* `scripts/script_creacion_BI.sql`: Script que construye el modelo dimensional (tablas de Hechos y Dimensiones) y genera las vistas necesarias para resolver 12 KPIs estratégicos (Ticket promedio, desvío de envíos, categorías con mayores descuentos, etc.).
+* `docs/DER.jpeg`: Diagrama de Entidad-Relación del modelo transaccional.
+* `docs/DER_BI.jpeg`: Diagrama de Entidad-Relación del modelo de Inteligencia de Negocios.
+* `docs/DOCUMENTACION.pdf`: Documentación técnica respaldando las decisiones de diseño y arquitectura.
+* `docs/REQUERIMIENTOS.pdf`: Requerimientos y especificiaciones del proyecto.
 
 ## 🚀 Principales Logros del Proyecto
 1. **Migración Exitosa:** Limpieza y estructuración de una tabla maestra desorganizada con millones de registros hacia un modelo fuertemente normalizado.
