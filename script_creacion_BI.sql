@@ -499,7 +499,7 @@ AS
 GO
 --SELECT * FROM PRAISE_THE_SUN_GDD.VIEW_4_Cantidad_ventas_por_turno
 
--- 5. Porcentaje de descuento aplicados en función del total de los tickets según el mes de cada año.
+-- 5. Porcentaje de descuento aplicados en funciÃ³n del total de los tickets segÃºn el mes de cada aÃ±o.
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_5_Porcentaje_descuento_aplicado_por_MES_ANIO
 AS
 	SELECT
@@ -512,7 +512,7 @@ AS
 GO
 --SELECT * FROM PRAISE_THE_SUN_GDD.VIEW_5_Porcentaje_descuento_aplicado_por_MES_ANIO
 
--- 6. Las tres categorías de productos con mayor descuento aplicado
+-- 6. Las tres categorÃ­as de productos con mayor descuento aplicado
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_6_Categorias_con_mayor_descuento_aplicado
 AS
 	SELECT TOP 3
@@ -528,7 +528,7 @@ AS
 GO
 --SELECT * FROM PRAISE_THE_SUN_GDD.VIEW_6_Categorias_con_mayor_descuento_aplicado
 
--- 7. Porcentaje de cumplimiento de envíos
+-- 7. Porcentaje de cumplimiento de envÃ­os
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_7_PORCENTAJE_CUMPLIMIENTO_ENVIOS
 AS
 	SELECT
@@ -543,7 +543,7 @@ AS
 GO
 --SELECT * FROM PRAISE_THE_SUN_GDD.VIEW_7_PORCENTAJE_CUMPLIMIENTO_ENVIOS
 
--- 8. Cantidad de envíos por rango etario de clientes
+-- 8. Cantidad de envÃ­os por rango etario de clientes
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_8_Cantidad_envios_por_Rango_etario
 AS
 	SELECT
@@ -558,7 +558,7 @@ AS
 GO
 --SELECT * FROM PRAISE_THE_SUN_GDD.VIEW_8_Cantidad_envios_por_Rango_etario
 
--- 9. Las 5 localidades con mayor costo de envío.
+-- 9. Las 5 localidades con mayor costo de envÃ­o.
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_9_TOP5_LOCALIDADES_COSTO_ENVIO
 AS
 	SELECT TOP 5
@@ -570,7 +570,7 @@ AS
 GO
 --SELECT * FROM PRAISE_THE_SUN_GDD.VIEW_9_TOP5_LOCALIDADES_COSTO_ENVIO
 
--- 10. Las 3 sucursales con el mayor importe de pagos en cuotas, según el medio de pago, mes y año.
+-- 10. Las 3 sucursales con el mayor importe de pagos en cuotas, segÃºn el medio de pago, mes y aÃ±o.
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_10
 AS
 	SELECT TOP(3) BI_S.nombre_sucursal, BI_MP.nombre_medio_pago, BI_T.anio, BI_T.mes  FROM PRAISE_THE_SUN_GDD.BI_Fact_Table_Pagos BI_FTP
@@ -582,7 +582,7 @@ AS
 	ORDER BY SUM(BI_FTP.importe_pago_total) DESC
 GO
 
--- 11. Promedio de importe de la cuota en función del rango etareo del cliente.
+-- 11. Promedio de importe de la cuota en funciÃ³n del rango etareo del cliente.
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_11
 AS
 	SELECT
@@ -596,7 +596,7 @@ AS
 	GROUP BY BI_RE.edad_desde, BI_RE.edad_hasta
 GO
 
--- 12. Porcentaje de descuento aplicado por cada medio de pago en función del valor de total de pagos sin el descuento, por cuatrimestre
+-- 12. Porcentaje de descuento aplicado por cada medio de pago en funciÃ³n del valor de total de pagos sin el descuento, por cuatrimestre
 CREATE VIEW PRAISE_THE_SUN_GDD.VIEW_12
 AS
 	SELECT BI_T.anio, BI_T.cuatrimestre, BI_MP.nombre_medio_pago, (SUM(BI_FTP.valor_descontado)*100/SUM(BI_FTP.importe_pago_total))as porcentaje_descuento_aplicado FROM PRAISE_THE_SUN_GDD.BI_Fact_Table_Pagos BI_FTP
